@@ -16,7 +16,7 @@ public class Biblioteca {
         this.emprestimos = new ArrayList<>();
     }
 
-    public void adicionarLivro(Livro livro) {
+    public void adicionarLivro(Livro livro)throws IllegalArgumentException {
         if (livro == null) {
             throw new IllegalArgumentException("Classes.Livro não pode ser nulo");
         }
@@ -76,21 +76,21 @@ public class Biblioteca {
                 .toList();
     }
 
-    private Livro buscarLivroPorIsbn(String isbn) {
+    public Livro buscarLivroPorIsbn(String isbn) {
         return livros.stream()
                 .filter(l -> l.getIsbn().equals(isbn))
                 .findFirst()
                 .orElse(null);
     }
 
-    private Usuario buscarUsuarioPorId(String id) {
+    public Usuario buscarUsuarioPorId(String id) {
         return usuarios.stream()
                 .filter(u -> u.getId().equals(id))
                 .findFirst()
                 .orElse(null);
     }
 
-    private Emprestimo buscarEmprestimoAtivo(String isbn) {
+    public Emprestimo buscarEmprestimoAtivo(String isbn) {
         return emprestimos.stream()
                 .filter(e -> e.getLivro().getIsbn().equals(isbn) && e.getDataDevolucaoReal() == null)
                 .findFirst()
