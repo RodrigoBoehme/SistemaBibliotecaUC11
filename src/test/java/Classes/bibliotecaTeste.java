@@ -5,6 +5,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,7 +39,10 @@ class BibliotecaTeste {
     void testCadastrarLivro() {
         // TODO: Implementar teste para cadastro de livro
 
-        biblioteca.adicionarLivro(livro1);
+        Livro livroTeste=new Livro("001987","Finafi","Scott Catota",1987);
+        biblioteca.adicionarLivro(livroTeste);
+        Livro livro01=biblioteca.buscarLivroPorIsbn("001987");
+        assertEquals(livro01,livroTeste,"Livro adicionado deveria aparecer ao pesquisa-lo");
         // Verificar se livro foi adicionado à biblioteca
 
     }
@@ -47,11 +51,12 @@ class BibliotecaTeste {
     @DisplayName("❌ Deve lançar exceção ao cadastrar livro nulo")
     void testCadastrarLivroNulo() {
         // TODO: Implementar teste para livro nulo
+        // Usar assertThrows para verificar exceção
+
         assertThrows(IllegalArgumentException.class, ()->{
             biblioteca.adicionarLivro(null);
         },"A ");
 
-        // Usar assertThrows para verificar exceção
     }
 
     @Test
@@ -68,6 +73,10 @@ class BibliotecaTeste {
     @DisplayName("❌ Não deve emprestar livro indisponível")
     void testEmprestarLivroIndisponivel() {
         // TODO: Implementar teste para livro já emprestado
+        biblioteca.emprestarLivro("123456","U001",LocalDate.now());
+        assertFalse(biblioteca.emprestarLivro("123456","U002",LocalDate.now()),"Tentar Emprestar um Livro não disponivel deveria retornar false");
+
+
     }
 
     @ParameterizedTest
@@ -76,6 +85,13 @@ class BibliotecaTeste {
     void testCalcularMulta(int diasAtraso) {
         // TODO: Implementar teste parametrizado para cálculo de multa
         // Dica: usar LocalDate.now().plusDays(diasAtraso) para data de devolução
+
+        biblioteca.emprestarLivro("123456","U001",LocalDate.now().plusDays(-14));
+
+        assertEquals(biblioteca.devolverLivro("123456",LocalDate.now().plusDays(diasAtraso)),diasAtraso*2);
+
+
+
     }
 
     @Test
@@ -83,6 +99,10 @@ class BibliotecaTeste {
     void testListarLivrosDisponiveis() {
         // TODO: Implementar teste para listagem de livros disponíveis
         // Emprestar um livro e verificar se não aparece na lista
+        biblioteca.emprestarLivro("123456","U001",LocalDate.now());
+        List<Livro> lista1=biblioteca.listarLivrosDisponiveis();
+        assertFalse(lista1.contains(livro1),"Lista não deveria conter livro1");
+
     }
 
     @Test
@@ -90,10 +110,17 @@ class BibliotecaTeste {
     void testUsuarioComMulta() {
         // TODO: Implementar teste para usuário com multa
         // Configurar usuário com multa e tentar empréstimo
+        usuario1.setPossuiMulta(true);
+        assertFalse(biblioteca.emprestarLivro("123456","U001",LocalDate.now()),"Esta tentativa de emprestimo deveria retornar false");
     }
 
     @AfterEach
     void tearDown() {
         // TODO: Limpar recursos se necessário
+        usuario1.setPossuiMulta(false);
+        usuario2.setPossuiMulta(false);
+        livro1.setDisponivel(true);
+        livro2.setDisponivel(true);
+
     }
 }
